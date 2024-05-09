@@ -1,21 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import RecipeProvider from './components/RecipeProvider';
+const express = require('express');
+const cors = require('cors');
+const db = require("./config/connection");
+const app = express();
+const port = 3001;
+const mainRouter = require("./routes")
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <RecipeProvider>
-      <App />
-    </RecipeProvider>
+app.use(cors())
 
-  </React.StrictMode>
-);
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+app.use("/api", mainRouter)
+
+app.get('/', (req, res) => {
+  res.send('Hello, Express!');
+});
+
+db.once('open', ()=>{
+  console.log("connected to mongoDB");
+  app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+  });
+})
+
+
+
+
